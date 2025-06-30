@@ -1,30 +1,18 @@
-import React, { useState } from 'react';
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  View,
-} from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-import Toast, { ErrorToast } from 'react-native-toast-message';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import { Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+
 import COLORS from 'styles/core/colors';
 
-
-
-
 export function AddRequestBodyScreen() {
-
   return (
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-
-       
-      </ScrollView>
+    <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+    >
+      <TouchableOpacity>
+        <Text>Hello</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
@@ -36,14 +24,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 12,
-    color: '#000',
-  },
-  picker: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
@@ -67,7 +47,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  formButtonRightChevron: {
+  formButtonIcon: {
     display: 'flex',
   },
   submitButton: {

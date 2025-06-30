@@ -1,38 +1,31 @@
 import Header from 'components/ui/Header';
-import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import COLORS from 'styles/core/colors';
-import AddAPIModalNavigator from 'navigation/AddAPIModalNavigator';
+import { useNavigation } from '@react-navigation/native';
+import type { RunTabNavigatorParamList } from 'types/navigation';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export default function RunAPIsScreen() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RunTabNavigatorParamList>>();
 
-  const [addModalVisible, setAddModalVisible] = useState(false);
-  
+  const handleOpenAddApiModal = () => {
+    navigation.navigate('AddApiModal'); // make sure this route is registered!
+  };
+
   return (
-
     <View style={styles.mainView}>
-      <Header title="Run API Calls" rightIcon={'add'} onRightPress={() => setAddModalVisible(true)} />
+      <Header
+        title="Run API Calls"
+        rightIcon="add"
+        onRightPress={handleOpenAddApiModal}
+      />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
           {/* Add your screen content here */}
-          <Dropdown/>
         </View>
       </SafeAreaView>
-
-
-
-    {addModalVisible && (
-        <Modal
-          visible={addModalVisible}
-          animationType="slide"
-          presentationStyle="pageSheet"
-          onRequestClose={() => setAddModalVisible(false)}
-          
-        >
-          <AddAPIModalNavigator onClose={() => setAddModalVisible(false)} />
-        </Modal>
-      )}
-
     </View>
   );
 }
@@ -50,19 +43,3 @@ const styles = StyleSheet.create({
     padding: 16,
   },
 });
-
-
-import RNPickerSelect from 'react-native-picker-select';
-
-export const Dropdown = () => {
-  return (
-    <RNPickerSelect
-      onValueChange={(value) => console.log(value)}
-      items={[
-        { label: 'Football', value: 'football' },
-        { label: 'Baseball', value: 'baseball' },
-        { label: 'Hockey', value: 'hockey' },
-      ]}
-    />
-  );
-};

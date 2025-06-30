@@ -5,15 +5,16 @@
  * @format
  */
 
-import { StatusBar, View } from 'react-native';
-import MainNavigator from "navigation/MainNavigator"
+import { StatusBar } from 'react-native';
+import MainNavigator from 'navigation/MainNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App() {
   return (
-    <View style={{flex: 1}}>
-      <StatusBar barStyle='light-content' />
-      <MainNavigator/>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
+      <MainNavigator />
+    </GestureHandlerRootView>
   );
 }
 

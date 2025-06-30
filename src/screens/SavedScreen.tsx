@@ -1,35 +1,31 @@
 import Header from 'components/ui/Header';
-import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import COLORS from 'styles/core/colors';
-import AddAPIModalNavigator from 'navigation/AddAPIModalNavigator';
+import { useNavigation } from '@react-navigation/native';
+import type { RunTabNavigatorParamList } from 'types/navigation';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+export default function SavedAPIsScreen() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RunTabNavigatorParamList>>();
 
-export default function RunAPIsScreen() {
-  const [addModalVisible, setAddModalVisible] = useState(false);
-
+  const handleOpenAddApiModal = () => {
+    navigation.navigate('AddApiModal'); // make sure this route is registered!
+  };
 
   return (
     <View style={styles.mainView}>
       <Header
         title="Saved API Calls"
-        rightIcon={'add'}
-        onRightPress={() => setAddModalVisible(true)}
+        rightIcon="add"
+        onRightPress={handleOpenAddApiModal}
       />
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>{/* Add your screen content here */}</View>
+        <View style={styles.content}>
+          {/* Add your screen content here */}
+        </View>
       </SafeAreaView>
-
-      {addModalVisible && (
-        <Modal
-          visible={addModalVisible}
-          animationType="slide"
-          presentationStyle="pageSheet"
-          onRequestClose={() => setAddModalVisible(false)}
-        >
-          <AddAPIModalNavigator onClose={() => setAddModalVisible(false)} />
-        </Modal>
-      )}
     </View>
   );
 }

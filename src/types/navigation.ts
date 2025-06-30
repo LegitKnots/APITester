@@ -12,10 +12,11 @@ export type TabNavigatorParamList = {
 
 export type RunTabNavigatorParamList = {
     RunScreen: undefined
-
+    AddApiModal: undefined
 }
 export type SavedTabNavigatorParamList = {
     SavedScreen: undefined
+    AddApiModal: undefined
 }
 export type SettingsTabNavigatorParamList = {
     SettingsScreen: undefined
