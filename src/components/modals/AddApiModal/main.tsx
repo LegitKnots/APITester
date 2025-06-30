@@ -5,40 +5,75 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  View,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Toast from 'react-native-toast-message';
-import COLORS from 'styles/core/colors';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import COLORS from 'styles/core/colors';
+import { SaveAPICall } from 'scripts/LocalStorage';
+import { useAPICallDraft } from 'context/APICallDraftContext';
+import type { APICall } from 'types/APIs';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { AddAPIModalNavigatorParamList } from 'types/navigation';
-import { SaveAPICall } from 'scripts/LocalStorage';
-import { APICall } from 'types/APIs';
 
 export function AddApiModal() {
   const navigation =
     useNavigation<NativeStackNavigationProp<AddAPIModalNavigatorParamList>>();
-  const [method, setMethod] = useState<string>('');
+
+  const { draft } = useAPICallDraft();
+
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [endpoint, setUri] = useState('');
+  const [method, setMethod] = useState<
+    'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | ''
+  >('');
 
   const handleSubmit = async () => {
-    if (!method) {
+    const validMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+
+    const missingField = !validMethods.includes(method)
+      ? 'Method'
+      : !name
+      ? 'Name'
+      : !endpoint
+      ? 'URI'
+      : '';
+
+    if (missingField) {
       Toast.show({
         type: 'error',
-        text1: 'Missing Method',
-        text2: 'Please select a valid method.',
+        text1: `Missing ${missingField}`,
+        text2: `Please enter a valid ${missingField.toLowerCase()}.`,
       });
       return;
     }
 
-    const data = {} as APICall;
+    const data: APICall = {
+      id: '12',
+      name,
+      desc,
+      endpoint,
+      method: method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+      headers: draft.headers ?? [],
+      body: draft.body ?? [],
+    };
 
-    SaveAPICall(data);
-
-    // continue with submission...
+    try {
+      await SaveAPICall(data);
+      Toast.show({ type: 'success', text1: 'API Call Saved' });
+      navigation.goBack();
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Save Failed',
+        text2: 'Something went wrong while saving.',
+      });
+    }
   };
 
   return (
@@ -51,30 +86,41 @@ export function AddApiModal() {
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        <TextInput style={styles.input} placeholder="Name" />
-        <TextInput style={styles.input} placeholder="Description" />
+        <TextInput
+          style={styles.input}
+          placeholder="Name"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={desc}
+          onChangeText={setDesc}
+        />
         <TextInput
           style={styles.input}
           placeholder="URI (ex. https://api.dev:3000/api/endpoint)"
+          value={endpoint}
+          onChangeText={setUri}
         />
-        <View pointerEvents="box-none">
-          <RNPickerSelect
-            onValueChange={value => setMethod(value)}
-            placeholder={{ label: '-- Method --', value: null }}
-            items={[
-              { label: 'GET', value: 'GET' },
-              { label: 'POST', value: 'POST' },
-              { label: 'PUT', value: 'PUT' },
-              { label: 'PATCH', value: 'PATCH' },
-              { label: 'DELETE', value: 'DELETE' },
-            ]}
-            style={{
-              inputIOS: styles.picker,
-              inputAndroid: styles.picker,
-            }}
-            value={method}
-          />
-        </View>
+
+        <RNPickerSelect
+          onValueChange={value => setMethod(value)}
+          placeholder={{ label: '-- Method --', value: '' }}
+          items={[
+            { label: 'GET', value: 'GET' },
+            { label: 'POST', value: 'POST' },
+            { label: 'PUT', value: 'PUT' },
+            { label: 'PATCH', value: 'PATCH' },
+            { label: 'DELETE', value: 'DELETE' },
+          ]}
+          style={{
+            inputIOS: styles.input,
+            inputAndroid: styles.input,
+          }}
+          value={method}
+        />
 
         <TouchableOpacity
           style={styles.formButton}
@@ -82,7 +128,6 @@ export function AddApiModal() {
         >
           <Text style={styles.formButtonText}>Request Headers</Text>
           <MaterialIcons
-            style={styles.formButtonIcon}
             name="chevron-right"
             size={24}
             color={COLORS.button.secondary.text}
@@ -95,7 +140,6 @@ export function AddApiModal() {
         >
           <Text style={styles.formButtonText}>Request Body</Text>
           <MaterialIcons
-            style={styles.formButtonIcon}
             name="chevron-right"
             size={24}
             color={COLORS.button.secondary.text}
@@ -116,20 +160,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background.primary,
   },
   scrollContainer: {
-    backgroundColor: COLORS.background.primary,
     padding: 24,
-    justifyContent: 'center',
     flexGrow: 1,
+    justifyContent: 'center',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 12,
-    color: '#000',
-  },
-  picker: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
@@ -152,9 +187,6 @@ const styles = StyleSheet.create({
     color: COLORS.button.secondary.text,
     fontWeight: '600',
     fontSize: 16,
-  },
-  formButtonIcon: {
-    display: 'flex',
   },
   submitButton: {
     backgroundColor: COLORS.button.primary.background,

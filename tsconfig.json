@@ -10,6 +10,8 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "components": ["./components/*", "./components/"],
+      "context": ["./context/*", "./context/"],
+      "config": ["./config/*", "./config/"],
       "navigation": ["./navigation/*", "./navigation/"],
       "screens": ["./screens/*", "./screens/"],
       "scripts": ["./scripts/*", "./scripts"],

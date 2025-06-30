@@ -9,11 +9,19 @@ export type APICall = {
 }
 
 export type Headers = {
-    name: string
+    key: string
     value: string
 }
 
 export type Body = {
-    name: string
+    key: string
     value: string
 }
+
+export type RunAPICallResult = {
+  responseStatus: number;
+  responseStatusText: string;
+  responseHeaders: Record<string, string>;
+  responseBody: any;
+  error?: string;
+};

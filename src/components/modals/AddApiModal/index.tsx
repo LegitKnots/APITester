@@ -9,11 +9,12 @@ import { AddAPIModalNavigatorParamList } from 'types/navigation';
 import Header from 'components/ui/Header';
 import { useNavigation } from '@react-navigation/native';
 const Stack = createNativeStackNavigator<AddAPIModalNavigatorParamList>();
+import { APICallDraftProvider } from 'context/APICallDraftContext';
 
 export default function AddAPIModalNavigator() {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   return (
-    <>
+    <APICallDraftProvider>
       <Header
         title="Add API"
         onBackPress={() => navigation.goBack()}
@@ -34,6 +35,6 @@ export default function AddAPIModalNavigator() {
           component={AddRequestBodyScreen}
         />
       </Stack.Navigator>
-    </>
+    </APICallDraftProvider>
   );
 }

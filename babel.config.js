@@ -9,6 +9,7 @@ module.exports = {
         alias: {
           components: './src/components/',
           config: './src/config/',
+          context: './src/context/',
           navigation: './src/navigation/',
           screens: './src/screens/',
           scripts: './src/scripts',

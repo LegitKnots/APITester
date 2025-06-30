@@ -1,4 +1,4 @@
-import {Headers, Body} from "./APIs"
+import {Headers, Body, APICall} from "./APIs"
 
 export type MainNavigatorParamList = {
     TabNavigator: undefined
@@ -17,6 +17,7 @@ export type RunTabNavigatorParamList = {
 export type SavedTabNavigatorParamList = {
     SavedScreen: undefined
     AddApiModal: undefined
+    viewAPIModal: { viewModalApi: APICall | null };
 }
 export type SettingsTabNavigatorParamList = {
     SettingsScreen: undefined
@@ -26,4 +27,10 @@ export type AddAPIModalNavigatorParamList = {
     AddApiModal: undefined
     AddRequestHeadersScreen: Headers[] | undefined
     AddRequestBodyScreen: Body[] | undefined
+}
+
+export type ViewAPIModalNavigatorParamList = {
+    ViewApiModal: undefined
+    RunApiScreen: undefined
+    currentlyViewedApi: APICall;
 }
