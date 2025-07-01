@@ -4,6 +4,7 @@ const baseColors = {
   background: {
     primary: '#1c272e',
     secondary: '#15232b',
+    delete: '#d11a2a',
   },
 } as const;
 

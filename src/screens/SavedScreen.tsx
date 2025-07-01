@@ -6,15 +6,18 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { SavedTabNavigatorParamList } from 'types/navigation';
 import type { APICall } from 'types/APIs';
 import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { DeleteAPICall, GetAllAPICalls } from 'scripts/LocalStorage';
 
 export default function SavedAPIsScreen() {
   const navigation =
@@ -22,24 +25,63 @@ export default function SavedAPIsScreen() {
 
   const [savedAPIs, setSavedAPIs] = useState<Record<string, APICall>>({});
 
-  useEffect(() => {
-    const loadSavedAPIs = async () => {
-      try {
-        const raw = await AsyncStorage.getItem('SavedAPICalls');
-        const parsed: Record<string, APICall> = raw ? JSON.parse(raw) : {};
-        setSavedAPIs(parsed);
-      } catch (error) {
-        console.error('Failed to load saved APIs:', error);
-      }
-    };
+  const loadSavedAPIs = async () => {
+    try {
+      const allAPIs = await GetAllAPICalls();
+      if (!allAPIs) throw new Error('Local storage returned null');
 
+      const apiMap: Record<string, APICall> = {};
+      for (const api of allAPIs) {
+        apiMap[api.id] = api;
+      }
+      setSavedAPIs(apiMap);
+    } catch (error) {
+      console.error('Failed to load saved APIs:', error);
+    }
+  };
+
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', loadSavedAPIs);
     return unsubscribe;
   }, [navigation]);
 
+  const handleDelete = async (id: string) => {
+    try {
+      await DeleteAPICall(id);
+      await loadSavedAPIs();
+    } catch (error) {
+      console.error('Failed to delete API call:', error);
+    }
+  };
+
   const handleOpenAddApiModal = () => {
     navigation.navigate('AddApiModal');
   };
+
+  const renderRightActions = (api: APICall) => (
+    <View style={styles.rightActionContainer}>
+      <TouchableOpacity
+        style={styles.fullDeleteAction}
+        onPress={() =>
+          Alert.alert(
+            'Delete API',
+            `Are you sure you want to delete "${api.name}"?`,
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => handleDelete(api.id),
+              },
+            ]
+          )
+        }
+      >
+        <MaterialIcons name="delete" size={28} color="#fff" />
+        <Text style={styles.swipeDeleteText}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.mainView}>
@@ -50,22 +92,44 @@ export default function SavedAPIsScreen() {
       />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content}>
-          {Object.entries(savedAPIs).length === 0 ? (
+          {Object.entries(savedAPIs).length ===  0? (
             <Text style={styles.emptyText}>No saved API calls yet.</Text>
           ) : (
             Object.entries(savedAPIs).map(([key, api]) => (
-              <TouchableOpacity
+              <Swipeable
                 key={key}
-                style={styles.card}
-                onPress={() => navigation.navigate('viewAPIModal', { viewModalApi: api })}
+                renderRightActions={() => renderRightActions(api)}
+                rightThreshold={40}
+                overshootRight={false}
+                friction={2}
+                overshootFriction={5}                
+
               >
-                <View style={styles.cardRow}>
-                  <Text style={styles.cardTitle}>{api.name}</Text>
-                  <MaterialIcons name="chevron-right" size={20} color="#777" />
+                <View style={styles.cardContainer}>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    style={styles.card}
+                    onPress={() =>
+                      navigation.navigate('viewAPIModal', { viewModalApi: api })
+                    }
+                  >
+                    <View style={styles.cardRow}>
+                      <Text style={styles.cardTitle}>{api.name}</Text>
+                      <MaterialIcons
+                        name="chevron-right"
+                        size={20}
+                        color="#777"
+                      />
+                    </View>
+                    <Text style={styles.cardSubtitle}>
+                      {api.method} • {api.endpoint}
+                    </Text>
+                    {api.desc ? (
+                      <Text style={styles.cardDesc}>{api.desc}</Text>
+                    ) : null}
+                  </TouchableOpacity>
                 </View>
-                <Text style={styles.cardSubtitle}>{api.method} • {api.endpoint}</Text>
-                {api.desc ? <Text style={styles.cardDesc}>{api.desc}</Text> : null}
-              </TouchableOpacity>
+              </Swipeable>
             ))
           )}
         </ScrollView>
@@ -86,21 +150,20 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   emptyText: {
-    color: '#777',
+    color: COLORS.text.muted,
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 32,
   },
+  cardContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
   card: {
-    backgroundColor: COLORS.background.secondary ?? '#fff',
+    backgroundColor: COLORS.background.secondary,
     padding: 16,
     borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
   },
   cardRow: {
     flexDirection: 'row',
@@ -115,11 +178,31 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: 13,
-    color: '#555',
+    color: COLORS.text.secondary,
   },
   cardDesc: {
     marginTop: 4,
     fontSize: 12,
-    color: '#666',
+    color: COLORS.text.secondary,
+  },
+  rightActionContainer: {
+    backgroundColor: COLORS.background.delete,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    borderRadius: 12,
+    marginBottom: 12,
+    paddingRight: 8,
+    flex: 1,
+  },
+  fullDeleteAction: {
+    width: 80,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  swipeDeleteText: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 4,
   },
 });

@@ -33,7 +33,7 @@ export async function SaveAPICall(APICallData: APICall) {
 }
 
 // Returns all API calls in storage
-export async function GetAllAPICalls() {
+export async function GetAllAPICalls() : Promise<APICall[] | false>{
   try {
     const currentSavedAPICalls = await AsyncStorage.getItem('SavedAPICalls');
 
@@ -88,7 +88,8 @@ function findCallById(calls: APICall[], id: APICall['id']): APICall | false {
 }
 
 export async function generateNewUniqueID(): Promise<string | false> {
-  const allCalls: APICall[] = await GetAllAPICalls();
+  const allCalls: APICall[] | false = await GetAllAPICalls();
+  if (!allCalls) return false
   const chars =
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const idLength = 16;
