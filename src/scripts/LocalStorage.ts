@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APICall } from 'types/APIs';
 
-
 // Saves an API call based on the data passed and will generate a new unique ID if required
 export async function SaveAPICall(APICallData: APICall) {
   try {
@@ -33,7 +32,7 @@ export async function SaveAPICall(APICallData: APICall) {
 }
 
 // Returns all API calls in storage
-export async function GetAllAPICalls() : Promise<APICall[] | false>{
+export async function GetAllAPICalls(): Promise<APICall[] | false> {
   try {
     const currentSavedAPICalls = await AsyncStorage.getItem('SavedAPICalls');
 
@@ -46,21 +45,55 @@ export async function GetAllAPICalls() : Promise<APICall[] | false>{
   }
 }
 
-
 // Returns API call based on the id passed
 export async function GetAPICallByID(id: APICall['id']) {
   const currentSavedAPICalls = await AsyncStorage.getItem('SavedAPICalls');
   const parsed = currentSavedAPICalls ? JSON.parse(currentSavedAPICalls) : [];
 
-  return findCallById(parsed, id) as APICall
+  return findCallById(parsed, id) as APICall;
+}
+
+export async function UpdateAPICall(APICallData: APICall): Promise<boolean> {
+  try {
+    const currentSavedAPICalls = await AsyncStorage.getItem('SavedAPICalls');
+    const parsed: APICall[] = currentSavedAPICalls
+      ? JSON.parse(currentSavedAPICalls)
+      : [];
+
+    const updatedSavedAPICalls = parsed.map(api =>
+      api.id === APICallData.id ? APICallData : api
+    );
+
+    await AsyncStorage.setItem(
+      'SavedAPICalls',
+      JSON.stringify(updatedSavedAPICalls),
+    );
+
+    return true;
+  } catch (error) {
+    console.error('Failed to update API call:', error);
+    return false;
+  }
 }
 
 
-// Delete an API call based on the id passed 
+export async function DuplicateAPICall(APICallData: APICall) {
+  const newAPICallData = {
+    ...APICallData,
+    id: 'getFromScript',
+    name: 'Copy of: ' + APICallData.name,
+  };
+
+  return await SaveAPICall(newAPICallData);
+}
+
+// Delete an API call based on the id passed
 export async function DeleteAPICall(id: APICall['id']): Promise<boolean> {
   try {
     const currentSavedAPICalls = await AsyncStorage.getItem('SavedAPICalls');
-    const parsed: APICall[] = currentSavedAPICalls ? JSON.parse(currentSavedAPICalls) : [];
+    const parsed: APICall[] = currentSavedAPICalls
+      ? JSON.parse(currentSavedAPICalls)
+      : [];
 
     const updatedSavedAPICalls = parsed.filter(api => api.id !== id);
 
@@ -78,9 +111,8 @@ export async function DeleteAPICall(id: APICall['id']): Promise<boolean> {
 
 // Deletes all API Calls in storage
 export async function DeleteAllAPICalls() {
-  return await AsyncStorage.setItem('SavedAPICalls', '{}')
+  return await AsyncStorage.setItem('SavedAPICalls', '{}');
 }
-
 
 function findCallById(calls: APICall[], id: APICall['id']): APICall | false {
   const match = calls.find(call => call.id === id);
@@ -89,7 +121,7 @@ function findCallById(calls: APICall[], id: APICall['id']): APICall | false {
 
 export async function generateNewUniqueID(): Promise<string | false> {
   const allCalls: APICall[] | false = await GetAllAPICalls();
-  if (!allCalls) return false
+  if (!allCalls) return false;
   const chars =
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const idLength = 16;

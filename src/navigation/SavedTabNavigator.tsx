@@ -4,10 +4,11 @@ import SavedScreen from 'screens/SavedScreen';
 import { SavedTabNavigatorParamList } from 'types/navigation';
 import AddAPIModal from 'components/modals/AddApiModal';
 import viewAPIModal from 'components/modals/ViewApiModal';
+import editAPIModalNavigator from 'components/modals/EditApiModal';
 
 const Stack = createNativeStackNavigator<SavedTabNavigatorParamList>();
 
-export default function OrderTabNavigator() {
+export default function SavedTabNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="SavedScreen"
@@ -22,6 +23,11 @@ export default function OrderTabNavigator() {
       <Stack.Screen
         name="viewAPIModal"
         component={viewAPIModal}
+        options={{ presentation: 'modal', headerShown: false }}
+      />
+      <Stack.Screen
+        name="editAPIModalNavigator"
+        component={editAPIModalNavigator}
         options={{ presentation: 'modal', headerShown: false }}
       />
     </Stack.Navigator>

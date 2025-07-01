@@ -5,18 +5,14 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { ViewApiModal } from './main';
 import Header from 'components/ui/Header';
-import type { APICall } from 'types/APIs';
-
-type ViewAPIModalNavigatorParam = {
-  viewModalApi: APICall;
-};
+import { SavedTabNavigatorParamList } from 'types/navigation';
 
 
 export default function ViewAPIModalNavigator() {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { viewModalApi } = route.params as ViewAPIModalNavigatorParam;
+  const { viewModalApi } = route.params as SavedTabNavigatorParamList;
 
   return (
       <View style={{ flex: 1 }}>

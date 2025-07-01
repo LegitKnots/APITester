@@ -1,36 +1,38 @@
-import {Headers, Body, APICall} from "./APIs"
+import { Headers, Body, APICall } from './APIs';
 
 export type MainNavigatorParamList = {
-    TabNavigator: undefined
-}
+  TabNavigator: undefined;
+};
 
 export type TabNavigatorParamList = {
-    run: undefined
-    saved: undefined
-    settings: undefined
-}
+  run: undefined;
+  saved: undefined;
+  settings: undefined;
+};
 
 export type RunTabNavigatorParamList = {
-    RunScreen: undefined
-    AddApiModal: undefined
-}
+  RunScreen: undefined;
+  AddApiModal: undefined;
+};
 export type SavedTabNavigatorParamList = {
-    SavedScreen: undefined
-    AddApiModal: undefined
-    viewAPIModal: { viewModalApi: APICall | null };
-}
+  SavedScreen: undefined;
+  AddApiModal: undefined;
+  viewAPIModal: { viewModalApi: APICall | null };
+  viewModalApi: APICall;
+  editAPIModalNavigator: { editingApi: APICall };
+};
 export type SettingsTabNavigatorParamList = {
-    SettingsScreen: undefined
-}
+  SettingsScreen: undefined;
+};
 
 export type AddAPIModalNavigatorParamList = {
-    AddApiModal: undefined
-    AddRequestHeadersScreen: Headers[] | undefined
-    AddRequestBodyScreen: Body[] | undefined
-}
+  AddApiModal: undefined;
+  AddRequestHeadersScreen: Headers[] | undefined;
+  AddRequestBodyScreen: Body[] | undefined;
+};
 
-export type ViewAPIModalNavigatorParamList = {
-    ViewApiModal: undefined
-    RunApiScreen: undefined
-    currentlyViewedApi: APICall;
-}
+export type EditAPIModalNavigatorParamList = {
+  EditApiModal: { editingApi: APICall };
+  EditRequestHeadersScreen: Headers[] | undefined;
+  EditRequestBodyScreen: Body[] | undefined;
+};
