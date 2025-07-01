@@ -13,6 +13,7 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
+import { DeleteAllAPICalls } from 'scripts/LocalStorage';
 
 export default function SettingsScreen() {
   const [darkMode, setDarkMode] = useState(false);
@@ -25,13 +26,15 @@ export default function SettingsScreen() {
         text: 'Clear',
         style: 'destructive',
         onPress: async () => {
-          await AsyncStorage.clear();
+          await DeleteAllAPICalls();
           Alert.alert('Storage cleared.');
         },
       },
     ]);
   };
 
+
+  //. UPDATE THIS WHEN I FEEL LIKE IT TO EXPORT ONLY API CALLS IN STOARGE, NOT ENTIRE FUCKING ASYNC STORAGE
   const handleExportStorage = async () => {
     try {
       const allKeys = await AsyncStorage.getAllKeys();

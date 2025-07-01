@@ -54,7 +54,7 @@ export function AddApiModal() {
     }
 
     const data: APICall = {
-      id: '12',
+      id: 'getFromScript',
       name,
       desc,
       endpoint,
