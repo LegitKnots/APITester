@@ -1,37 +1,36 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
   KeyboardAvoidingView,
+  ScrollView,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Toast from 'react-native-toast-message';
-import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
 import COLORS from 'styles/core/colors';
 import { SaveAPICall } from 'scripts/LocalStorage';
 import { useAPICallDraft } from 'context/APICallDraftContext';
-import type { APICall } from 'types/APIs';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { AddAPIModalNavigatorParamList } from 'types/navigation';
+import type { APICall } from 'types/APIs';
 
 export function AddApiModal() {
   const navigation =
     useNavigation<NativeStackNavigationProp<AddAPIModalNavigatorParamList>>();
-
   const { draft } = useAPICallDraft();
 
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [endpoint, setUri] = useState('');
-  const [method, setMethod] = useState<
-    'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | ''
-  >('');
+  const [method, setMethod] = useState<APICall['method'] | ''>('');
+  const pickerRef = useRef<any>(null);
 
   const handleSubmit = async () => {
     const validMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
@@ -58,7 +57,7 @@ export function AddApiModal() {
       name,
       desc,
       endpoint,
-      method: method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+      method: method as APICall['method'],
       headers: draft.headers ?? [],
       body: draft.body ?? [],
     };
@@ -105,22 +104,55 @@ export function AddApiModal() {
           onChangeText={setUri}
         />
 
-        <RNPickerSelect
-          onValueChange={value => setMethod(value)}
-          placeholder={{ label: '-- Method --', value: '' }}
-          items={[
-            { label: 'GET', value: 'GET' },
-            { label: 'POST', value: 'POST' },
-            { label: 'PUT', value: 'PUT' },
-            { label: 'PATCH', value: 'PATCH' },
-            { label: 'DELETE', value: 'DELETE' },
-          ]}
-          style={{
-            inputIOS: styles.input,
-            inputAndroid: styles.input,
-          }}
-          value={method}
-        />
+        <View>
+          <TouchableOpacity
+            onPress={() => pickerRef.current?.togglePicker?.()}
+            activeOpacity={0.8}
+            style={styles.pickerTouch}
+          >
+            <Text style={[styles.pickerText, !method && styles.placeholder]}>
+              {method || '-- Method --'}
+            </Text>
+            <MaterialIcons name="arrow-drop-down" size={22} color="#888" />
+          </TouchableOpacity>
+
+          <RNPickerSelect
+            ref={pickerRef}
+            onValueChange={setMethod}
+            value={method}
+            items={[
+              { label: 'GET', value: 'GET' },
+              { label: 'POST', value: 'POST' },
+              { label: 'PUT', value: 'PUT' },
+              { label: 'PATCH', value: 'PATCH' },
+              { label: 'DELETE', value: 'DELETE' },
+            ]}
+            placeholder={{ label: '-- Method --', value: '' }}
+            useNativeAndroidPickerStyle={false}
+            style={{
+              inputIOS: {
+                height: 0,
+                width: 0,
+                padding: 0,
+                margin: 0,
+              },
+              inputAndroid: {
+                height: 0,
+                width: 0,
+                padding: 0,
+                margin: 0,
+              },
+              viewContainer: {
+                height: 0,
+                width: 0,
+              },
+              iconContainer: {
+                height: 0,
+                width: 0,
+              },
+            }}
+          />
+        </View>
 
         <TouchableOpacity
           style={styles.formButton}
@@ -168,9 +200,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
-    padding: 14,
+    paddingHorizontal: 14,
+    paddingVertical: Platform.OS === 'ios' ? 14 : 10,
     marginBottom: 12,
-    color: '#000',
+    justifyContent: 'center',
+  },
+  pickerTouch: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingVertical: Platform.OS === 'ios' ? 14 : 10,
+  },
+  pickerText: {
+    fontSize: 16,
+    color: COLORS.text.input,
+  },
+  placeholder: {
+    color: '#888',
   },
   formButton: {
     backgroundColor: COLORS.button.secondary.background,

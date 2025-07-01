@@ -6,6 +6,7 @@ const dark = {
     primary: '#e3e3e3',
     secondary: '#6e6e6e',
     muted: '#555',
+    input: '#aaa',
   },
   tabBar: {
     borderTop: '#3a3a3a',
