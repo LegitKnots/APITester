@@ -19,7 +19,6 @@ import { useAPICallDraft } from 'context/APICallDraftContext';
 import type { APICall } from 'types/APIs';
 import type {
   EditAPIModalNavigatorParamList,
-  SavedTabNavigatorParamList,
 } from 'types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -40,7 +39,7 @@ export function EditApiModal() {
 
   useEffect(() => {
     setDraft(editingApi);
-  });
+  }, []);
 
   const handleSubmit = async () => {
     const validMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
