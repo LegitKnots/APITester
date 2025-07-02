@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,27 +14,69 @@ import Share from 'react-native-share';
 import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
 import { DeleteAllAPICalls } from 'scripts/APIStorage';
+import { GetAppSettings, UpdateSetting } from 'scripts/AppSettings';
+import type { AppSettings, AutoSaveSettings } from 'types/AppSettings';
 
 export default function SettingsScreen() {
-  const [darkMode, setDarkMode] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
 
-  const handleClearStorage = async () => {
-    Alert.alert('Clear All Storage', 'Are you sure you want to delete all saved data?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Clear',
-        style: 'destructive',
-        onPress: async () => {
-          await DeleteAllAPICalls();
-          Alert.alert('Storage cleared.');
-        },
-      },
-    ]);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const loaded = await GetAppSettings();
+      setSettings(loaded);
+    };
+    fetchSettings();
+  }, []);
+
+  const handleAutoSaveChange = async (value: boolean) => {
+    if (!settings) return;
+
+    const newSetting: AutoSaveSettings = value
+      ? { autoSave: true, askAlways: false }
+      : { autoSave: false, askAlways: settings.autoSaveResponseSettings.askAlways };
+
+    const success = await UpdateSetting('autoSaveResponseSettings', newSetting);
+    if (success) {
+      setSettings(prev => (prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev));
+    }
   };
 
+  const handleAskToSaveChange = async (value: boolean) => {
+    if (!settings) return;
 
-  //. UPDATE THIS WHEN I FEEL LIKE IT TO EXPORT ONLY API CALLS IN STOARGE, NOT ENTIRE FUCKING ASYNC STORAGE
+    const prevSetting = settings.autoSaveResponseSettings;
+
+    if (prevSetting.autoSave === true) return; // askAlways is locked out when autoSave is true
+
+    const newSetting: AutoSaveSettings = {
+      autoSave: false,
+      askAlways: value,
+    };
+
+    const success = await UpdateSetting('autoSaveResponseSettings', newSetting);
+    if (success) {
+      setSettings(prev => (prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev));
+    }
+  };
+
+  const handleClearStorage = async () => {
+    Alert.alert(
+      'Clear All Storage',
+      'Are you sure you want to delete all saved data?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            await DeleteAllAPICalls();
+            Alert.alert('Storage cleared.');
+          },
+        },
+      ]
+    );
+  };
+
   const handleExportStorage = async () => {
     try {
       const allKeys = await AsyncStorage.getAllKeys();
@@ -56,47 +98,61 @@ export default function SettingsScreen() {
     }
   };
 
+  if (!settings) return null;
+
+  const autoSaveSetting = settings.autoSaveResponseSettings;
+  const autoSaveEnabled = autoSaveSetting.autoSave;
+  const askAlways = autoSaveEnabled ? false : autoSaveSetting.askAlways;
+
   return (
     <View style={styles.mainView}>
       <Header title="App Settings" />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
-          <Text style={styles.sectionTitle}>Runtime Options</Text>
+          <Text style={styles.sectionTitle}>API Response Settings</Text>
+
           <View style={styles.row}>
-            <Text style={styles.label}>Dark Mode</Text>
+            <Text style={styles.label}>Auto Save</Text>
             <Switch
-              value={darkMode}
-              onValueChange={setDarkMode}
+              value={autoSaveEnabled}
+              onValueChange={handleAutoSaveChange}
               trackColor={{ false: '#ccc', true: COLORS.primary }}
-              thumbColor={darkMode ? COLORS.secondary : '#fff'}
+              thumbColor={autoSaveEnabled ? COLORS.secondary : '#fff'}
             />
           </View>
+
           <View style={styles.row}>
-            <Text style={styles.label}>Debug Mode</Text>
+            <Text style={styles.label}>Ask To Save</Text>
             <Switch
-              value={debugMode}
-              onValueChange={setDebugMode}
+              value={askAlways}
+              onValueChange={handleAskToSaveChange}
               trackColor={{ false: '#ccc', true: COLORS.primary }}
-              thumbColor={debugMode ? COLORS.secondary : '#fff'}
+              thumbColor={askAlways ? COLORS.secondary : '#fff'}
+              disabled={autoSaveEnabled}
             />
           </View>
 
           <Text style={styles.sectionTitle}>Storage</Text>
+
           <TouchableOpacity style={styles.button} onPress={handleExportStorage}>
             <Text style={styles.buttonText}>Export All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.buttonDanger]} onPress={handleClearStorage}>
+
+          <TouchableOpacity
+            style={[styles.button, styles.buttonDanger]}
+            onPress={handleClearStorage}
+          >
             <Text style={styles.buttonText}>Clear All Storage</Text>
           </TouchableOpacity>
 
           <Text style={styles.sectionTitle}>Info</Text>
           <View style={styles.infoRow}>
             <Text style={styles.label}>App Version</Text>
-            <Text style={styles.value}>1.0.0</Text>
+            <Text style={styles.value}>{settings.appVersion}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.label}>Environment</Text>
-            <Text style={styles.value}>Development</Text>
+            <Text style={styles.value}>{settings.environment}</Text>
           </View>
         </View>
       </SafeAreaView>
