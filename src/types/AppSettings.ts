@@ -9,8 +9,8 @@ export type AutoSaveSettings =
   | { autoSave: false; askAlways: boolean };
 
 export const defaultAppSettings = {
-  appVersion: '1.0.1',
-  environment: 'Development',
+  appVersion: '1.0.3',
+  environment: __DEV__ ? 'Development': 'Release',
   autoSaveResponseSettings: {
     autoSave: true,
     askAlways: false,

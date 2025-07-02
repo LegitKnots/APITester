@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
@@ -16,6 +17,7 @@ import COLORS from 'styles/core/colors';
 import { DeleteAllAPICalls } from 'scripts/APIStorage';
 import { GetAppSettings, UpdateSetting } from 'scripts/AppSettings';
 import type { AppSettings, AutoSaveSettings } from 'types/AppSettings';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function SettingsScreen() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
@@ -33,11 +35,16 @@ export default function SettingsScreen() {
 
     const newSetting: AutoSaveSettings = value
       ? { autoSave: true, askAlways: false }
-      : { autoSave: false, askAlways: settings.autoSaveResponseSettings.askAlways };
+      : {
+          autoSave: false,
+          askAlways: settings.autoSaveResponseSettings.askAlways,
+        };
 
     const success = await UpdateSetting('autoSaveResponseSettings', newSetting);
     if (success) {
-      setSettings(prev => (prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev));
+      setSettings(prev =>
+        prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev,
+      );
     }
   };
 
@@ -55,7 +62,9 @@ export default function SettingsScreen() {
 
     const success = await UpdateSetting('autoSaveResponseSettings', newSetting);
     if (success) {
-      setSettings(prev => (prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev));
+      setSettings(prev =>
+        prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev,
+      );
     }
   };
 
@@ -73,7 +82,7 @@ export default function SettingsScreen() {
             Alert.alert('Storage cleared.');
           },
         },
-      ]
+      ],
     );
   };
 
@@ -152,7 +161,13 @@ export default function SettingsScreen() {
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.label}>Environment</Text>
-            <Text style={styles.value}>{settings.environment}</Text>
+            <Text style={styles.value}>{__DEV__ ? 'Development' : 'Release'}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Source Code</Text>
+            <TouchableOpacity onPress={() => Linking.openURL('https://github.com/LegitKnots/APITester')}>
+              <Text style={styles.valueLink}>GitHub <MaterialIcons name='open-in-new'/></Text>
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
@@ -200,6 +215,11 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 14,
     color: COLORS.text.secondary,
+  },
+  valueLink: {
+    fontSize: 14,
+    color: COLORS.text.secondary,
+    textDecorationLine: 'underline',
   },
   button: {
     backgroundColor: COLORS.primary,
