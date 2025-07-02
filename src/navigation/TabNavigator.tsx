@@ -36,7 +36,7 @@ export default function MainTabNavigator() {
 
   return (
     <Tab.Navigator
-      initialRouteName="run"
+      initialRouteName="saved"
       screenOptions={({ route }) => ({
         headerShown: false,
         lazy: true,
@@ -73,15 +73,16 @@ export default function MainTabNavigator() {
       })}
     >
       <Tab.Screen
-        name="run"
-        component={RunTabNavigator}
-        options={{ tabBarLabel: TAB_LABELS.run }}
-      />
-      <Tab.Screen
         name="saved"
         component={SavedTabNavigator}
         options={{ tabBarLabel: TAB_LABELS.saved }}
       />
+      <Tab.Screen
+        name="run"
+        component={RunTabNavigator}
+        options={{ tabBarLabel: TAB_LABELS.run }}
+      />
+      
       <Tab.Screen
         name="settings"
         component={SettingsTabNavigator}
