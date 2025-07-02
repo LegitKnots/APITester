@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'ios' ? 14 : 10,
     marginBottom: 12,
     justifyContent: 'center',
+    color: COLORS.text.input,
   },
   pickerTouch: {
     borderWidth: 1,

@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 14,
     marginBottom: 12,
-    color: '#000',
+    color: COLORS.text.input,
   },
   formButton: {
     backgroundColor: COLORS.button.secondary.background,

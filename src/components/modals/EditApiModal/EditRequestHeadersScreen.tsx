@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
-    color: '#000',
+    color: COLORS.text.input,
   },
   deleteButton: {
     padding: 4,
