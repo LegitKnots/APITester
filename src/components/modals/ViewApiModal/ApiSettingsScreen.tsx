@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import { DeleteAPICall, DuplicateAPICall } from 'scripts/LocalStorage';
+import { DeleteAPICall, DuplicateAPICall } from 'scripts/APIStorage';
 import COLORS from 'styles/core/colors';
 import type { APICall } from 'types/APIs';
 import { useNavigation } from '@react-navigation/native';

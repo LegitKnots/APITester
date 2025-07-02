@@ -15,7 +15,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
 import COLORS from 'styles/core/colors';
-import { SaveAPICall } from 'scripts/LocalStorage';
+import { SaveAPICall } from 'scripts/APIStorage';
 import { useAPICallDraft } from 'context/APICallDraftContext';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { AddAPIModalNavigatorParamList } from 'types/navigation';

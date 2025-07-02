@@ -17,7 +17,7 @@ import type { SavedTabNavigatorParamList } from 'types/navigation';
 import type { APICall } from 'types/APIs';
 import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
-import { DeleteAPICall, GetAllAPICalls } from 'scripts/LocalStorage';
+import { DeleteAPICall, GetAllAPICalls } from 'scripts/APIStorage';
 
 export default function SavedAPIsScreen() {
   const navigation =

@@ -13,7 +13,7 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
-import { DeleteAllAPICalls } from 'scripts/LocalStorage';
+import { DeleteAllAPICalls } from 'scripts/APIStorage';
 
 export default function SettingsScreen() {
   const [darkMode, setDarkMode] = useState(false);

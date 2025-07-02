@@ -14,7 +14,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import COLORS from 'styles/core/colors';
-import { UpdateAPICall } from 'scripts/LocalStorage';
+import { UpdateAPICall } from 'scripts/APIStorage';
 import { useAPICallDraft } from 'context/APICallDraftContext';
 import type { APICall } from 'types/APIs';
 import type {
