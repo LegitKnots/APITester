@@ -12,11 +12,11 @@ export type TabNavigatorParamList = {
 
 export type RunTabNavigatorParamList = {
   RunScreen: undefined;
-  AddApiModal: undefined;
+  addApiModalNavigator: undefined;
 };
 export type SavedTabNavigatorParamList = {
   SavedScreen: undefined;
-  AddApiModal: undefined;
+  addApiModalNavigator: undefined;
   viewAPIModal: { viewModalApi: APICall | null };
   viewModalApi: APICall;
   editAPIModalNavigator: { editingApi: APICall };

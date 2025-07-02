@@ -55,7 +55,7 @@ export default function SavedAPIsScreen() {
   };
 
   const handleOpenAddApiModal = () => {
-    navigation.navigate('AddApiModal');
+    navigation.navigate('addApiModalNavigator');
   };
 
   const renderRightActions = (api: APICall) => (

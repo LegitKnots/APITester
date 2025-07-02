@@ -11,7 +11,7 @@ export default function RunAPIsScreen() {
     useNavigation<NativeStackNavigationProp<RunTabNavigatorParamList>>();
 
   const handleOpenAddApiModal = () => {
-    navigation.navigate('AddApiModal');
+    navigation.navigate('addApiModalNavigator');
   };
 
   return (

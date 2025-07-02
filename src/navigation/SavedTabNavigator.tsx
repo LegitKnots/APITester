@@ -16,7 +16,7 @@ export default function SavedTabNavigator() {
     >
       <Stack.Screen name="SavedScreen" component={SavedScreen} />
       <Stack.Screen
-        name="AddApiModal"
+        name="addApiModalNavigator"
         component={AddAPIModal}
         options={{ presentation: 'modal', headerShown: false }}
       />

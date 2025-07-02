@@ -111,8 +111,11 @@ export async function DeleteAPICall(id: APICall['id']): Promise<boolean> {
 
 // Deletes all API Calls in storage
 export async function DeleteAllAPICalls() {
-  return await AsyncStorage.setItem('SavedAPICalls', '{}');
+  return await AsyncStorage.setItem('SavedAPICalls', '');
 }
+
+
+// Helpers //
 
 function findCallById(calls: APICall[], id: APICall['id']): APICall | false {
   const match = calls.find(call => call.id === id);

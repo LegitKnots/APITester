@@ -14,7 +14,7 @@ export default function OrderTabNavigator() {
     >
       <Stack.Screen name="RunScreen" component={RunScreen} />
       <Stack.Screen
-        name="AddApiModal"
+        name="addApiModalNavigator"
         component={AddAPIModal}
         options={{ presentation: 'modal', headerShown: false }} // ← this is key
       />
