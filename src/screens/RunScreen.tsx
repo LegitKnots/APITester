@@ -18,6 +18,8 @@ import RunAPICall from 'scripts/RunAPICall';
 import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
 import ResponseBodyFormatted from 'components/ResponseBodyFormatting';
+import { GetAppSettings } from 'scripts/AppSettings';
+import { SaveAPICallResponse } from 'scripts/APIStorage';
 
 type RunAPIsScreenRouteProp = RouteProp<RunTabNavigatorParamList, 'RunScreen'>;
 
@@ -47,7 +49,12 @@ export default function RunAPIsScreen() {
     setResponseData(null);
     try {
       const result = await RunAPICall(passedApiCall as APICall);
-      console.log(result);
+
+      const settings = await GetAppSettings();
+      if (settings.autoSaveResponseSettings?.autoSave && passedApiCall?.id) {
+        SaveAPICallResponse(passedApiCall.id, result);
+      }
+
       setResponseData(result);
     } finally {
       setLoading(false);

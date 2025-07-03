@@ -69,6 +69,7 @@ export function EditApiModal() {
       method: method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
       headers: draft.headers ?? [],
       body: draft.body ?? [],
+      savedResponses: editingApi.savedResponses,
     };
 
     try {

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import RunAPIsScreen from './RunApiScreen';
+import SavedAPIResponsesScreen from './SavedAPIResponsesScreen';
 import ApiSettingsScreen from './ApiSettingsScreen';
 
 import COLORS from 'styles/core/colors';
@@ -21,7 +21,7 @@ type Props = {
 
 export function ViewApiModal({ currentlyViewedApi }: Props) {
 
-  const [activeTab, setActiveTab] = useState<'Details' | 'Run' | 'Settings'>('Details')
+  const [activeTab, setActiveTab] = useState<'Details' | 'Responses' | 'Settings'>('Details')
 
   return (
     <KeyboardAvoidingView
@@ -33,16 +33,16 @@ export function ViewApiModal({ currentlyViewedApi }: Props) {
         <TouchableOpacity onPress={() => setActiveTab('Details')} style={activeTab == 'Details' ? styles.upperTabActive : styles.upperTab}>
           <MaterialIcons name='info-outline' style={activeTab == 'Details' ? styles.upperTabIconActive : styles.upperTabIcon}/>
         </TouchableOpacity>
-        {/* <TouchableOpacity onPress={() => setActiveTab('Run')} style={activeTab == 'Run' ? styles.upperTabActive : styles.upperTab}>
-          <MaterialIcons name='play-arrow'  style={activeTab == 'Run' ? styles.upperTabIconActive : styles.upperTabIcon}/>
-        </TouchableOpacity> */}
+        <TouchableOpacity onPress={() => setActiveTab('Responses')} style={activeTab == 'Responses' ? styles.upperTabActive : styles.upperTab}>
+          <MaterialIcons name='chat'  style={activeTab == 'Responses' ? styles.upperTabIconActive : styles.upperTabIcon}/>
+        </TouchableOpacity>
           <TouchableOpacity onPress={() => setActiveTab('Settings')} style={activeTab == 'Settings' ? styles.upperTabActive : styles.upperTab}>
           <MaterialIcons name='settings'  style={activeTab == 'Settings' ? styles.upperTabIconActive : styles.upperTabIcon}/>
         </TouchableOpacity>
       </View>
 
       {activeTab=='Details' && <ViewApiDetails currentlyViewedApi={currentlyViewedApi}/>}
-      {activeTab=='Run' && <RunAPIsScreen currentlyViewedApi={currentlyViewedApi}/>}
+      {activeTab=='Responses' && <SavedAPIResponsesScreen currentlyViewedApi={currentlyViewedApi}/>}
       {activeTab=='Settings' && <ApiSettingsScreen currentlyViewedApi={currentlyViewedApi}/>}
       
     </KeyboardAvoidingView>
@@ -138,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export * from './RunApiScreen';
+export * from './SavedAPIResponsesScreen';

@@ -50,18 +50,22 @@ export default async function RunAPICall(apiCall: APICall): Promise<RunAPICallRe
     });
 
     return {
+      responseID: 'string',
       responseStatus: response.status,
       responseStatusText: response.statusText,
       responseHeaders,
       responseBody: parsedBody,
+      time: new Date().toISOString()
     };
   } catch (err: any) {
     return {
+      responseID: 'string',
       responseStatus: 0,
       responseStatusText: 'Network or parsing error',
       responseHeaders: {},
       responseBody: null,
       error: err?.message || 'Unknown error',
+      time: new Date().toISOString()
     };
   }
 }

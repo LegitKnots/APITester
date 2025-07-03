@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { APICall } from 'types/APIs';
+import { APICall, RunAPICallResult, SavedResponse } from 'types/APIs';
 
 // Saves an API call based on the data passed and will generate a new unique ID if required
 export async function SaveAPICall(APICallData: APICall) {
@@ -15,6 +15,7 @@ export async function SaveAPICall(APICallData: APICall) {
       APICallData = {
         ...APICallData,
         id: newID,
+        savedResponses: null,
       };
     }
 
@@ -61,7 +62,7 @@ export async function UpdateAPICall(APICallData: APICall): Promise<boolean> {
       : [];
 
     const updatedSavedAPICalls = parsed.map(api =>
-      api.id === APICallData.id ? APICallData : api
+      api.id === APICallData.id ? APICallData : api,
     );
 
     await AsyncStorage.setItem(
@@ -75,7 +76,6 @@ export async function UpdateAPICall(APICallData: APICall): Promise<boolean> {
     return false;
   }
 }
-
 
 export async function DuplicateAPICall(APICallData: APICall) {
   const newAPICallData = {
@@ -114,6 +114,28 @@ export async function DeleteAllAPICalls() {
   return await AsyncStorage.setItem('SavedAPICalls', '');
 }
 
+export async function SaveAPICallResponse(
+  id: string,
+  response: RunAPICallResult,
+) {
+  const allCalls: APICall[] | false = await GetAllAPICalls();
+  if (!allCalls) return false;
+
+  const callToUpdate = findCallById(allCalls, id);
+  if (!callToUpdate || response.error) return false;
+
+  const formattedResponse = {
+    ...response
+  } as SavedResponse
+
+  const updated = {
+    responseID: '',
+    ...callToUpdate,
+    savedResponses: [...(callToUpdate.savedResponses ?? []), formattedResponse],
+  } as APICall;
+
+  return await UpdateAPICall(updated);
+}
 
 // Helpers //
 
@@ -138,6 +160,32 @@ export async function generateNewUniqueID(): Promise<string | false> {
     const testID = generateId();
     const existingCall = findCallById(allCalls, testID);
     if (!existingCall) return testID;
+  }
+
+  return false;
+}
+
+export async function generateNewResponseID(id: string): Promise<string | false> {
+  const allCalls: APICall[] | false = await GetAllAPICalls();
+  if (!allCalls) return false;
+
+  const callToUpdate = findCallById(allCalls, id);
+  if (!callToUpdate) return false;
+
+  const responses = callToUpdate.savedResponses ?? [];
+
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const idLength = 16;
+
+  const generateId = (): string =>
+    Array.from({ length: idLength }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length)),
+    ).join('');
+
+  for (let i = 0; i < 5; i++) {
+    const testID = generateId();
+    const exists = responses.some(res => res.responseID === testID);
+    if (!exists) return testID;
   }
 
   return false;
