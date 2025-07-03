@@ -18,6 +18,7 @@ type Props = {
   currentlyViewedApi: APICall;
 };
 
+
 export function ViewApiModal({ currentlyViewedApi }: Props) {
 
   const [activeTab, setActiveTab] = useState<'Details' | 'Run' | 'Settings'>('Details')
@@ -32,10 +33,10 @@ export function ViewApiModal({ currentlyViewedApi }: Props) {
         <TouchableOpacity onPress={() => setActiveTab('Details')} style={activeTab == 'Details' ? styles.upperTabActive : styles.upperTab}>
           <MaterialIcons name='info-outline' style={activeTab == 'Details' ? styles.upperTabIconActive : styles.upperTabIcon}/>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab('Run')} style={activeTab == 'Run' ? styles.upperTabActive : styles.upperTab}>
+        {/* <TouchableOpacity onPress={() => setActiveTab('Run')} style={activeTab == 'Run' ? styles.upperTabActive : styles.upperTab}>
           <MaterialIcons name='play-arrow'  style={activeTab == 'Run' ? styles.upperTabIconActive : styles.upperTabIcon}/>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab('Settings')} style={activeTab == 'Settings' ? styles.upperTabActive : styles.upperTab}>
+        </TouchableOpacity> */}
+          <TouchableOpacity onPress={() => setActiveTab('Settings')} style={activeTab == 'Settings' ? styles.upperTabActive : styles.upperTab}>
           <MaterialIcons name='settings'  style={activeTab == 'Settings' ? styles.upperTabIconActive : styles.upperTabIcon}/>
         </TouchableOpacity>
       </View>

@@ -5,13 +5,14 @@ export type MainNavigatorParamList = {
 };
 
 export type TabNavigatorParamList = {
-  run: undefined;
+  run: { screen: 'RunScreen'; params: { APICallData: APICall } } | undefined;
   saved: undefined;
   settings: undefined;
 };
 
 export type RunTabNavigatorParamList = {
-  RunScreen: undefined;
+  RunScreen: { APICallData?: APICall } | undefined;
+  AddApiModal: undefined;
   addApiModalNavigator: undefined;
 };
 export type SavedTabNavigatorParamList = {

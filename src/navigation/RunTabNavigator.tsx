@@ -6,17 +6,20 @@ import AddAPIModal from 'components/modals/AddApiModal';
 
 const Stack = createNativeStackNavigator<RunTabNavigatorParamList>();
 
-export default function OrderTabNavigator() {
+export default function RunTabNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="RunScreen"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="RunScreen" component={RunScreen} />
+      <Stack.Screen
+        name="RunScreen"
+        component={RunScreen}
+      />
       <Stack.Screen
         name="addApiModalNavigator"
         component={AddAPIModal}
-        options={{ presentation: 'modal', headerShown: false }} // ← this is key
+        options={{ presentation: 'modal', headerShown: false }}
       />
     </Stack.Navigator>
   );

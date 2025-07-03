@@ -73,7 +73,7 @@ export default function SavedAPIsScreen() {
                 style: 'destructive',
                 onPress: () => handleDelete(api.id),
               },
-            ]
+            ],
           )
         }
       >
@@ -92,8 +92,11 @@ export default function SavedAPIsScreen() {
       />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content}>
-          {Object.entries(savedAPIs).length ===  0? (
-            <Text style={styles.emptyText}>No saved API calls yet.</Text>
+          {Object.entries(savedAPIs).length === 0 ? (
+            <View>
+              <Text style={styles.emptyText}>No saved API calls yet.</Text>
+              <Text style={styles.emptyText}>Click the add button above to create a new API Call</Text>
+            </View>
           ) : (
             Object.entries(savedAPIs).map(([key, api]) => (
               <Swipeable
@@ -102,8 +105,7 @@ export default function SavedAPIsScreen() {
                 rightThreshold={40}
                 overshootRight={false}
                 friction={2}
-                overshootFriction={5}                
-
+                overshootFriction={5}
               >
                 <View style={styles.cardContainer}>
                   <TouchableOpacity
