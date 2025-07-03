@@ -1,16 +1,9 @@
 export type AppSettings = {
   appVersion: string;
-  autoSaveResponseSettings: AutoSaveSettings;
+  autoSaveResponses: boolean;
 };
-
-export type AutoSaveSettings =
-  | { autoSave: true; askAlways: false }
-  | { autoSave: false; askAlways: boolean };
 
 export const defaultAppSettings = {
   appVersion: '1.0.3',
-  autoSaveResponseSettings: {
-    autoSave: true,
-    askAlways: false,
-  },
+  autoSaveResponses: true,
 } as AppSettings;

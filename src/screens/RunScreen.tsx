@@ -45,7 +45,7 @@ export default function RunAPIsScreen() {
   useEffect(() => {
     const loadSettings = async () => {
       const settings = await GetAppSettings();
-      setAutoSaveEnabled(settings.autoSaveResponseSettings?.autoSave ?? false);
+      setAutoSaveEnabled(settings.autoSaveResponses ?? false);
     };
     loadSettings();
   }, []);
@@ -61,7 +61,7 @@ export default function RunAPIsScreen() {
       const result = await RunAPICall(passedApiCall as APICall);
 
       const settings = await GetAppSettings();
-      if (settings.autoSaveResponseSettings?.autoSave && passedApiCall?.id) {
+      if (settings.autoSaveResponses && passedApiCall?.id) {
         SaveAPICallResponse(passedApiCall.id, result);
       }
 

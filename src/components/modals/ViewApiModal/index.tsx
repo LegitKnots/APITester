@@ -28,11 +28,13 @@ export default function ViewAPIModalNavigator() {
   const route = useRoute();
 
   const { viewModalApi } = route.params as SavedTabNavigatorParamList;
+  const apiName = (name: string) => name.length > 20 ? name.slice(0, 20) + '...' : name;
+
 
   return (
     <View style={{ flex: 1 }}>
       <Header
-        title={'API Call: ' + viewModalApi.name}
+        title={apiName(viewModalApi.name)}
         onBackPress={() => navigation.goBack()}
         leftIcon="close"
         topPadding={false}

@@ -21,13 +21,13 @@ const ICON_SIZE = Platform.select({
 
 const TAB_ICONS: Record<keyof TabNavigatorParamList, string> = {
   run: 'terminal',
-  saved: 'save',
+  saved: 'storage',
   settings: 'settings',
 };
 
 const TAB_LABELS: Record<keyof TabNavigatorParamList, string> = {
   run: 'Run',
-  saved: 'Saved',
+  saved: 'APIs',
   settings: 'Settings',
 };
 

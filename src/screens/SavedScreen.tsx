@@ -85,7 +85,7 @@ export default function SavedAPIsScreen() {
   return (
     <View style={styles.mainView}>
       <Header
-        title="Saved API Calls"
+        title="API Calls"
         rightIcon="add"
         onRightPress={handleOpenAddApiModal}
       />

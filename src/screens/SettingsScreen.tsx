@@ -16,7 +16,7 @@ import Header from 'components/ui/Header';
 import COLORS from 'styles/core/colors';
 import { DeleteAllAPICalls } from 'scripts/APIStorage';
 import { GetAppSettings, UpdateSetting } from 'scripts/AppSettings';
-import type { AppSettings, AutoSaveSettings } from 'types/AppSettings';
+import type { AppSettings } from 'types/AppSettings';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function SettingsScreen() {
@@ -33,37 +33,10 @@ export default function SettingsScreen() {
   const handleAutoSaveChange = async (value: boolean) => {
     if (!settings) return;
 
-    const newSetting: AutoSaveSettings = value
-      ? { autoSave: true, askAlways: false }
-      : {
-          autoSave: false,
-          askAlways: settings.autoSaveResponseSettings.askAlways,
-        };
-
-    const success = await UpdateSetting('autoSaveResponseSettings', newSetting);
+    const success = await UpdateSetting('autoSaveResponses', value);
     if (success) {
       setSettings(prev =>
-        prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev,
-      );
-    }
-  };
-
-  const handleAskToSaveChange = async (value: boolean) => {
-    if (!settings) return;
-
-    const prevSetting = settings.autoSaveResponseSettings;
-
-    if (prevSetting.autoSave === true) return; // askAlways is locked out when autoSave is true
-
-    const newSetting: AutoSaveSettings = {
-      autoSave: false,
-      askAlways: value,
-    };
-
-    const success = await UpdateSetting('autoSaveResponseSettings', newSetting);
-    if (success) {
-      setSettings(prev =>
-        prev ? { ...prev, autoSaveResponseSettings: newSetting } : prev,
+        prev ? { ...prev, autoSaveResponses: value } : prev,
       );
     }
   };
@@ -88,10 +61,9 @@ export default function SettingsScreen() {
 
   const handleExportStorage = async () => {
     try {
-      const allKeys = await AsyncStorage.getAllKeys();
-      const allEntries = await AsyncStorage.multiGet(allKeys);
-      const exportObj = Object.fromEntries(allEntries);
-      const exportString = JSON.stringify(exportObj, null, 2);
+      const allEntries = await AsyncStorage.getItem('SavedAPICalls');
+      //const exportObj = Object.fromEntries(allEntries);
+      const exportString = JSON.stringify(allEntries, null, 2);
 
       const path = `${RNFS.DocumentDirectoryPath}/storage-export.json`;
       await RNFS.writeFile(path, exportString, 'utf8');
@@ -103,25 +75,29 @@ export default function SettingsScreen() {
       });
     } catch (err) {
       console.error('Export error:', err);
-      Alert.alert('Failed to export storage.');
+      if (typeof err === 'string' && !err.includes('User did not share'))
+        Alert.alert('Failed to export API calls.');
     }
   };
 
   if (!settings) return null;
 
-  const autoSaveSetting = settings.autoSaveResponseSettings;
-  const autoSaveEnabled = autoSaveSetting.autoSave;
-  const askAlways = autoSaveEnabled ? false : autoSaveSetting.askAlways;
+  const autoSaveEnabled = settings.autoSaveResponses;
 
   return (
     <View style={styles.mainView}>
-      <Header title="App Settings" />
+      <Header title="Settings" />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
           <Text style={styles.sectionTitle}>API Response Settings</Text>
 
           <View style={styles.row}>
-            <Text style={styles.label}>Auto Save</Text>
+            <View>
+              <Text style={styles.label}>Auto Save</Text>
+              <Text style={styles.description}>
+                Automatically save server responses
+              </Text>
+            </View>
             <Switch
               value={autoSaveEnabled}
               onValueChange={handleAutoSaveChange}
@@ -130,28 +106,17 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <View style={styles.row}>
-            <Text style={styles.label}>Ask To Save</Text>
-            <Switch
-              value={askAlways}
-              onValueChange={handleAskToSaveChange}
-              trackColor={{ false: '#ccc', true: COLORS.primary }}
-              thumbColor={askAlways ? COLORS.secondary : '#fff'}
-              disabled={autoSaveEnabled}
-            />
-          </View>
-
           <Text style={styles.sectionTitle}>Storage</Text>
 
           <TouchableOpacity style={styles.button} onPress={handleExportStorage}>
-            <Text style={styles.buttonText}>Export All</Text>
+            <Text style={styles.buttonText}>Export All API Calls</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.buttonDanger]}
             onPress={handleClearStorage}
           >
-            <Text style={styles.buttonText}>Clear All Storage</Text>
+            <Text style={styles.buttonText}>Delete All API Calls</Text>
           </TouchableOpacity>
 
           <Text style={styles.sectionTitle}>Info</Text>
@@ -161,12 +126,20 @@ export default function SettingsScreen() {
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.label}>Environment</Text>
-            <Text style={styles.value}>{__DEV__ ? 'Development' : 'Release'}</Text>
+            <Text style={styles.value}>
+              {__DEV__ ? 'Development' : 'Release'}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.label}>Source Code</Text>
-            <TouchableOpacity onPress={() => Linking.openURL('https://github.com/LegitKnots/APITester')}>
-              <Text style={styles.valueLink}>GitHub <MaterialIcons name='open-in-new'/></Text>
+            <TouchableOpacity
+              onPress={() =>
+                Linking.openURL('https://github.com/LegitKnots/APITester')
+              }
+            >
+              <Text style={styles.valueLink}>
+                GitHub <MaterialIcons name="open-in-new" />
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -211,6 +184,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: COLORS.text.primary,
+  },
+  description: {
+    fontSize: 12,
+    color: COLORS.text.muted,
   },
   value: {
     fontSize: 14,
