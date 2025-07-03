@@ -112,7 +112,7 @@ export default function RunAPIsScreen() {
               <View style={styles.actionButtons}>
                 <TouchableOpacity
                   style={styles.runButton}
-                  onPress={() => handleRunApiCall()}
+                  onPress={handleRunApiCall}
                 >
                   {loading ? (
                     <ActivityIndicator color="#fff" />
