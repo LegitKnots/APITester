@@ -63,7 +63,7 @@ export default async function RunAPICall(apiCall: APICall): Promise<RunAPICallRe
       responseStatus: 0,
       responseStatusText: 'Network or parsing error',
       responseHeaders: {},
-      responseBody: null,
+      responseBody: {},
       error: err?.message || 'Unknown error',
       time: new Date().toISOString()
     };
