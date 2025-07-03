@@ -20,6 +20,7 @@ import COLORS from 'styles/core/colors';
 import ResponseBodyFormatted from 'components/ResponseBodyFormatting';
 import { GetAppSettings } from 'scripts/AppSettings';
 import { SaveAPICallResponse } from 'scripts/APIStorage';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type RunAPIsScreenRouteProp = RouteProp<RunTabNavigatorParamList, 'RunScreen'>;
 
@@ -39,6 +40,15 @@ export default function RunAPIsScreen() {
   const handleOpenAddApiModal = () => {
     navigation.navigate('addApiModalNavigator');
   };
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const settings = await GetAppSettings();
+      setAutoSaveEnabled(settings.autoSaveResponseSettings?.autoSave ?? false);
+    };
+    loadSettings();
+  }, []);
 
   useEffect(() => {
     setResponseData(null);
@@ -58,6 +68,12 @@ export default function RunAPIsScreen() {
       setResponseData(result);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleSaveResponse() {
+    if (passedApiCall?.id && responseData) {
+      SaveAPICallResponse(passedApiCall.id, responseData);
     }
   }
 
@@ -93,16 +109,32 @@ export default function RunAPIsScreen() {
               </Text>
 
               {/* Placeholder for request preview and runner */}
-              <TouchableOpacity
-                style={styles.runButton}
-                onPress={() => handleRunApiCall()}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.runButtonText}>Run API Call</Text>
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  style={styles.runButton}
+                  onPress={() => handleRunApiCall()}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.runButtonText}>Run API Call</Text>
+                  )}
+                </TouchableOpacity>
+                {responseData && autoSaveEnabled === false && (
+                  <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={handleSaveResponse}
+                  >
+                    <MaterialIcons
+                      style={styles.saveIcon}
+                      name="save"
+                      size={20}
+                      color={COLORS.primary}
+                    />
+                  </TouchableOpacity>
                 )}
-              </TouchableOpacity>
+              </View>
+
               {responseData && (
                 <>
                   <View style={styles.section}>
@@ -241,18 +273,36 @@ const styles = StyleSheet.create({
     color: COLORS.text.primary,
     marginBottom: 6,
   },
+  actionButtons: {
+    width: '100%',
+    flexDirection: 'row',
+    gap: 12, // for spacing between buttons if supported, or use marginRight
+  },
   runButton: {
-    marginTop: 16,
+    flex: 1,
     backgroundColor: COLORS.button.primary.background,
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButton: {
+    flex: 0.3,
+    backgroundColor: COLORS.button.blue.background,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   runButtonText: {
     color: COLORS.button.primary.text,
     fontWeight: '600',
     fontSize: 16,
   },
+  saveIcon: {
+    color: COLORS.button.primary.text,
+  },
+
   section: {
     marginBottom: 20,
   },

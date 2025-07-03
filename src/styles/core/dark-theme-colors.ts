@@ -23,6 +23,10 @@ const dark = {
       text: baseColors.primary,
       background: baseColors.background.secondary
     },
+    blue: {
+      text: baseColors.secondary,
+      background: '#0096FF'
+    },
   },
 
   
